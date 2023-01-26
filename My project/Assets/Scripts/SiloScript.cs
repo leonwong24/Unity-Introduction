@@ -26,4 +26,20 @@ public class SiloScript : MonoBehaviour, ITouchable
         throw new System.NotImplementedException("Silo tapped code here");
     }
 
+    public void selected()
+    {
+        changeColor(Color.green);
+        //throw new System.NotImplementedException("Silo selected");
+    }
+
+    public void unselected()
+    {
+        changeColor(Color.white);
+        //throw new System.NotImplementedException("Silo unselected");
+    }
+
+    private void changeColor(Color newColor)
+    {
+        GetComponent<Renderer>().material.color = newColor;
+    }
 }

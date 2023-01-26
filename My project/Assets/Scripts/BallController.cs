@@ -25,4 +25,21 @@ public class BallController : MonoBehaviour, ITouchable
     {
         throw new System.NotImplementedException("Ball tapped here");
     }
+
+    public void selected()
+    {
+        changeColor(Color.green);
+        //throw new System.NotImplementedException("Ball selected");
+    }
+
+    public void unselected()
+    {
+        changeColor(Color.white);
+        //throw new System.NotImplementedException("Ball unselected");
+    }
+
+    private void changeColor(Color newColor)
+    {
+        GetComponent<Renderer>().material.color = newColor;
+    }
 }

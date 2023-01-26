@@ -6,6 +6,11 @@ public class TouchManagerScript : MonoBehaviour
 {
     float timer = 0f;
     private bool hasMoved;
+    Ray screenPointToRay;
+
+
+    private ITouchable selectedObject = null;
+    private ITouchable prevSelectedObject = null;
 
     // Start is called before the first frame update
     void Start()
@@ -32,9 +37,21 @@ public class TouchManagerScript : MonoBehaviour
                     timer = 0f;
                     hasMoved = false;
                     break;
-
                 case TouchPhase.Moved:
                     hasMoved = true;
+
+                    /*
+                     * Begin Drag movement
+                     */
+                    if(selectedObject != null)
+                    {
+                        screenPointToRay = Camera.main.ScreenPointToRay(touchPosition);
+                        selectedObject.OnDrag(screenPointToRay);
+                    }
+
+                    /*
+                     * End of drag movement
+                     */
                     print("finger moved");
                     break;
 
@@ -43,31 +60,44 @@ public class TouchManagerScript : MonoBehaviour
 
                 case TouchPhase.Ended:
                     print(timer);
-                    if ( (timer <= 0.3f) && !hasMoved)   //tapped
-                    {
+                    if ((timer <= 0.3f) && !hasMoved){   //tapped
                         print("tapped");
-                        Ray screenPointToRay = Camera.main.ScreenPointToRay(touchPosition);
+                        screenPointToRay = Camera.main.ScreenPointToRay(touchPosition);
 
                         Debug.DrawRay(screenPointToRay.origin, 45 * screenPointToRay.direction, Color.red);
                         RaycastHit hitInfo;
 
-                        if (Physics.Raycast(screenPointToRay, out hitInfo))
-                        {
+                        if (Physics.Raycast(screenPointToRay, out hitInfo)){
                             //print("hit something!");
                             ITouchable touchedObject = hitInfo.transform.GetComponent<ITouchable>();
 
-                            if (touchedObject != null)
-                                touchedObject.OnTap();
+                            if (touchedObject != null){
+                                //touchedObject.OnTap();
+                                if (touchedObject == selectedObject){   //unselect the same object
+                                    prevSelectedObject = selectedObject;
+                                    selectedObject = null;
+                                }
 
+                                else{  // select other object
+                                    prevSelectedObject = selectedObject;
+                                    selectedObject = touchedObject;
+                                    touchedObject.selected();
+                                }
+                            }
                         }
-                        else
-                        {
-                            //print("miss hit");
+                        else{
+                            prevSelectedObject = selectedObject;
+                            selectedObject = null;
+                            print("no object is selected");
                         }
+                        if (prevSelectedObject != selectedObject && prevSelectedObject != null)
+                            prevSelectedObject.unselected();
                     }
-                        
-                    else
+
+                    else{   // hold & release
                         print("too long");
+                        
+                    }
                     break;
             }
         }

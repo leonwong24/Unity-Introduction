@@ -6,6 +6,8 @@ using UnityEngine;
 public class SpaceShipScript : MonoBehaviour, ITouchable
 {
     Vector3 acceleration, velocity;
+    private float distance;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -27,18 +29,35 @@ public class SpaceShipScript : MonoBehaviour, ITouchable
         transform.position += velocity * Time.deltaTime;   // s = ut
     }
 
-    internal void changeColor(Color newColor)
+    void changeColor(Color newColor)
     {
         GetComponent<Renderer>().material.color = newColor;
     }
 
     public void OnTap()
     {
-        throw new NotImplementedException("Spaceship tapped here");
+        changeColor(Color.green);
+        //throw new NotImplementedException("Spaceship tapped here");
     }
 
     public void OnDrag(Ray collidingRay)
     {
-        throw new NotImplementedException();
+        
+        transform.position = collidingRay.GetPoint(distance);
+
+    }
+
+    public void selected()
+    {
+        distance = Vector3.Distance(Camera.main.transform.position, transform.position);
+        changeColor(Color.green);
+        //throw new NotImplementedException("Spaceship selected");
+    }
+
+    public void unselected()
+    {
+        distance = 0f;
+        changeColor(Color.white);
+        //throw new NotImplementedException("Spaceship unselected");
     }
 }
